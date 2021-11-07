@@ -158,8 +158,7 @@ public class Cafes {
 
     }
 
-    public void insertar(String nombre, int provid, float precio, int ventas,
-                         int total) throws AccesoDatosException {
+    public void insertar(String nombre, int provid, float precio, int ventas, int total) throws AccesoDatosException {
 
         /* Sentencia sql */
         PreparedStatement stmt = null;
@@ -242,11 +241,23 @@ public class Cafes {
         ResultSet rs = null;
         try {
             con = new Utilidades().getConnection();
+
+            // Creación de la sentencia
+            stmt = con.prepareStatement("select * from proveedores WHERE PROVEEDORES.PROV_ID = ?");
+            stmt.setInt(1, provid);
+
+            // Ejecución de la consulta y obtención de resultados en un ResultSet
+            rs = stmt.executeQuery();
+            System.out.println("Proveedor: " + rs.getString("PROV_NOMBRE")
+                    + ", Calle: " + rs.getString("CALLE")
+                    + ", Ciudad:" + rs.getString("CIUDAD")
+                    + ", Pais: " + rs.getString("PAIS")
+                    + " y Código Postal:" + rs.getString("CP"));
+
             // Creación de la sentencia
             stmt = con.prepareStatement(SEARCH_CAFES_PROVEEDOR);
             stmt.setInt(1, provid);
-            // Ejecución de la consulta y obtención de resultados en un
-            // ResultSet
+            // Ejecución de la consulta y obtención de resultados en un ResultSet
             rs = stmt.executeQuery();
 
             // Recuperación de los datos del ResultSet
