@@ -15,12 +15,44 @@ public class Cafes {
     private static final String INSERT_CAFE_QUERY = "insert into CAFES values (?,?,?,?,?)";
     private static final String DELETE_CAFE_QUERY = "delete from CAFES WHERE CAF_NOMBRE = ?";
     private static final String SEARCH_CAFES_PROVEEDOR = "select * from CAFES,PROVEEDORES WHERE CAFES.PROV_ID= ? AND CAFES.PROV_ID=PROVEEDORES.PROV_ID";
-
     private static final String CREATE_TABLE_PROVEEDORES = "create table if not exists proveedores (PROV_ID integer NOT NULL, PROV_NOMBRE varchar(40) NOT NULL, CALLE varchar(40) NOT NULL, CIUDAD varchar(20) NOT NULL, PAIS varchar(2) NOT NULL, CP varchar(5), PRIMARY KEY (PROV_ID));";
-
     private static final String CREATE_TABLE_CAFES = "create table if not exists CAFES (CAF_NOMBRE varchar(32) NOT NULL, PROV_ID int NOT NULL, PRECIO numeric(10,2) NOT NULL, VENTAS integer NOT NULL, TOTAL integer NOT NULL, PRIMARY KEY (CAF_NOMBRE), FOREIGN KEY (PROV_ID) REFERENCES PROVEEDORES(PROV_ID));";
 
+    private Connection conection;
+    private ResultSet rs;
+    private PreparedStatement pstmt;
+    private Statement stmt;
+
     public Cafes() {
+        try {
+            this.conection = new Utilidades().getConnection();
+            this.rs = null;
+            this.pstmt = null;
+            this.stmt = null;
+        } catch (SQLException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void cerrar() {
+        try {
+            con.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void liberar() {
+        try {
+            rs.close();
+            pstmt.close();
+            stmt.close();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    /*public Cafes() {
 
         Statement stmt = null;
 
@@ -58,21 +90,15 @@ public class Cafes {
                 Utilidades.printSQLException(sqle);
             }
         }
-    }
+    }*/
 
     public void verTabla() throws AccesoDatosException {
-
-        /* Sentencia sql */
-        Statement stmt = null;
-        /* Conjunto de Resultados a obtener de la sentencia sql */
-        ResultSet rs = null;
+        new Cafes();
         try {
             // Creación de la sentencia
             stmt = con.createStatement();
-            // Ejecución de la consulta y obtención de resultados en un
-            // ResultSet
+            // Ejecución de la consulta y obtención de resultados en un ResultSet
             rs = stmt.executeQuery(SELECT_CAFES_QUERY);
-
             // Recuperación de los datos del ResultSet
             while (rs.next()) {
                 String coffeeName = rs.getString("CAF_NOMBRE");
@@ -83,45 +109,23 @@ public class Cafes {
                 System.out.println(coffeeName + ", " + supplierID + ", "
                         + PRECIO + ", " + VENTAS + ", " + total);
             }
-
-
         } catch (SQLException sqle) {
-            // En una aplicación real, escribo en el log y delego
-            // System.err.println(sqle.getMessage());
-            Utilidades.printSQLException(sqle);
-            throw new AccesoDatosException(
-                    "Ocurrió un error al acceder a los datos");
+            System.err.println(sqle.getMessage());
         } finally {
-            try {
-                // Liberamos todos los recursos pase lo que pase
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-            } catch (SQLException sqle) {
-                // En una aplicación real, escribo en el log, no delego porque
-                // es error al liberar recursos
-                Utilidades.printSQLException(sqle);
-            }
+            liberar();
+            cerrar();
         }
-
     }
 
     public void buscar(String nombre) throws AccesoDatosException {
-
-        /* Sentencia sql */
-        PreparedStatement stmt = null;
-        /* Conjunto de Resultados a obtener de la sentencia sql */
-        ResultSet rs = null;
+        new Cafes();
         try {
             // Creación de la sentencia
-            stmt = con.prepareStatement(SEARCH_CAFE_QUERY);
-            stmt.setString(1, nombre);
+            pstmt = con.prepareStatement(SEARCH_CAFE_QUERY);
+            pstmt.setString(1, nombre);
             // Ejecución de la consulta y obtención de resultados en un
             // ResultSet
-            rs = stmt.executeQuery();
+            rs = pstmt.executeQuery();
 
             // Recuperación de los datos del ResultSet
             if (rs.next()) {
@@ -130,125 +134,65 @@ public class Cafes {
                 float PRECIO = rs.getFloat("PRECIO");
                 int VENTAS = rs.getInt("VENTAS");
                 int total = rs.getInt("TOTAL");
-                System.out.println(coffeeName + ", " + supplierID + ", "
-                        + PRECIO + ", " + VENTAS + ", " + total);
+                System.out.println(coffeeName + ", " + supplierID + ", " + PRECIO + ", " + VENTAS + ", " + total);
             }
-
-
         } catch (SQLException sqle) {
-            // En una aplicación real, escribo en el log y delego
             Utilidades.printSQLException(sqle);
-            throw new AccesoDatosException(
-                    "Ocurrió un error al acceder a los datos");
+            throw new AccesoDatosException("Ocurrió un error al acceder a los datos");
         } finally {
-            try {
-                // Liberamos todos los recursos pase lo que pase
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-            } catch (SQLException sqle) {
-                // En una aplicación real, escribo en el log, no delego porque
-                // es error al liberar recursos
-                Utilidades.printSQLException(sqle);
-            }
+            liberar();
+            cerrar();
         }
-
     }
 
-    public void insertar(String nombre, int provid, float precio, int ventas,
-                         int total) throws AccesoDatosException {
-
-        /* Sentencia sql */
-        PreparedStatement stmt = null;
-
+    public void insertar(String nombre, int provid, float precio, int ventas, int total) throws AccesoDatosException {
+        new Cafes();
         try {
-
-            stmt = con.prepareStatement(INSERT_CAFE_QUERY);
-            stmt.setString(1, nombre);
-            stmt.setInt(2, provid);
-            stmt.setFloat(3, precio);
-            stmt.setInt(4, ventas);
-            stmt.setInt(5, total);
+            pstmt = con.prepareStatement(INSERT_CAFE_QUERY);
+            pstmt.setString(1, nombre);
+            pstmt.setInt(2, provid);
+            pstmt.setFloat(3, precio);
+            pstmt.setInt(4, ventas);
+            pstmt.setInt(5, total);
             // Ejecución de la inserción
-            stmt.executeUpdate();
-
-
+            pstmt.executeUpdate();
         } catch (SQLException sqle) {
-            // En una aplicación real, escribo en el log y delego
             Utilidades.printSQLException(sqle);
-            throw new AccesoDatosException(
-                    "Ocurrió un error al acceder a los datos");
-
+            throw new AccesoDatosException("Ocurrió un error al acceder a los datos");
         } finally {
-            try {
-                // Liberamos todos los recursos pase lo que pase
-                if (stmt != null) {
-                    stmt.close();
-                }
-
-            } catch (SQLException sqle) {
-                // En una aplicación real, escribo en el log, no delego porque
-                // es error al liberar recursos
-                Utilidades.printSQLException(sqle);
-            }
+            liberar();
+            cerrar();
         }
-
     }
 
     public void borrar(String nombre) throws AccesoDatosException {
-
-        /* Sentencia sql */
-        PreparedStatement stmt = null;
-
+        new Cafes();
         try {
             // Creación de la sentencia
-            stmt = con.prepareStatement(DELETE_CAFE_QUERY);
-            stmt.setString(1, nombre);
+            pstmt = con.prepareStatement(DELETE_CAFE_QUERY);
+            pstmt.setString(1, nombre);
             // Ejecución del borrado
-            stmt.executeUpdate();
+            pstmt.executeUpdate();
             System.out.println("café " + nombre + " ha sido borrado.");
-
         } catch (SQLException sqle) {
             // En una aplicación real, escribo en el log y delego
             Utilidades.printSQLException(sqle);
-            throw new AccesoDatosException(
-                    "Ocurrió un error al acceder a los datos");
-
+            throw new AccesoDatosException("Ocurrió un error al acceder a los datos");
         } finally {
-            try {
-                // Liberamos todos los recursos pase lo que pase
-                if (stmt != null) {
-                    stmt.close();
-                }
-
-            } catch (SQLException sqle) {
-                // En una aplicación real, escribo en el log, no delego porque
-                // es error al liberar recursos
-                Utilidades.printSQLException(sqle);
-            }
-
+            liberar();
+            cerrar();
         }
-
     }
 
     public void cafesPorProveedor(int provid) throws AccesoDatosException {
-
-        /* Sentencia sql */
-        PreparedStatement stmt = null;
-        /* Conjunto de Resultados a obtener de la sentencia sql */
-        ResultSet rs = null;
+        new Cafes();
         try {
-            con = new Utilidades().getConnection();
             // Creación de la sentencia
-            stmt = con.prepareStatement(SEARCH_CAFES_PROVEEDOR);
-            stmt.setInt(1, provid);
+            pstmt = con.prepareStatement(SEARCH_CAFES_PROVEEDOR);
+            pstmt.setInt(1, provid);
             // Ejecución de la consulta y obtención de resultados en un
             // ResultSet
-            rs = stmt.executeQuery();
-
+            rs = pstmt.executeQuery();
             // Recuperación de los datos del ResultSet
             while (rs.next()) {
                 String coffeeName = rs.getString("CAF_NOMBRE");
@@ -266,34 +210,13 @@ public class Cafes {
                         + ",Y el proveedor es:" + provName + "," + calle + ","
                         + ciudad + "," + pais + "," + cp);
             }
-
-        } catch (IOException e) {
-            // Error al leer propiedades
-            // En una aplicación real, escribo en el log y delego
-            System.err.println(e.getMessage());
-            throw new AccesoDatosException(
-                    "Ocurrió un error al acceder a los datos");
         } catch (SQLException sqle) {
             // En una aplicación real, escribo en el log y delego
             Utilidades.printSQLException(sqle);
-            throw new AccesoDatosException(
-                    "Ocurrió un error al acceder a los datos");
+            throw new AccesoDatosException("Ocurrió un error al acceder a los datos");
         } finally {
-            try {
-                // Liberamos todos los recursos pase lo que pase
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-
-            } catch (SQLException sqle) {
-                // En una aplicación real, escribo en el log, no delego porque
-                // es error al liberar recursos
-                Utilidades.printSQLException(sqle);
-            }
+            liberar();
+            cerrar();
         }
-
     }
 }
