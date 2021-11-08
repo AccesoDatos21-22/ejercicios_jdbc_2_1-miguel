@@ -248,11 +248,14 @@ public class Cafes {
 
             // Ejecución de la consulta y obtención de resultados en un ResultSet
             rs = stmt.executeQuery();
-            System.out.println("Proveedor: " + rs.getString("PROV_NOMBRE")
-                    + ", Calle: " + rs.getString("CALLE")
-                    + ", Ciudad:" + rs.getString("CIUDAD")
-                    + ", Pais: " + rs.getString("PAIS")
-                    + " y Código Postal:" + rs.getString("CP"));
+            if (rs.next()) {
+                System.out.println("Proveedor: " + rs.getString("PROV_NOMBRE")
+                        + ", Calle: " + rs.getString("CALLE")
+                        + ", Ciudad:" + rs.getString("CIUDAD")
+                        + ", Pais: " + rs.getString("PAIS")
+                        + " y Código Postal:" + rs.getString("CP"));
+            }
+
 
             // Creación de la sentencia
             stmt = con.prepareStatement(SEARCH_CAFES_PROVEEDOR);
