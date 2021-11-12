@@ -3,6 +3,8 @@ import org.iesinfantaelena.dao.Libros;
 import org.iesinfantaelena.modelo.AccesoDatosException;
 import org.iesinfantaelena.modelo.Libro;
 
+import java.util.Arrays;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -26,6 +28,12 @@ public class Main {
             libros.anadirLibro(libro1);
             libros.anadirLibro(libro2);
             libros.anadirLibro(libro3);
+            libros.obtenerLibro(12453);
+            System.out.println(Arrays.toString(libros.getCamposLibro()));
+            System.out.println(libros.verCatalogo());
+            libros.borrar(libro2);
+            System.out.println(libros.verCatalogo());
+
 
         } catch (AccesoDatosException e) {
             e.printStackTrace();

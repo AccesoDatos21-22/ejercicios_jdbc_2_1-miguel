@@ -6,6 +6,7 @@ import org.iesinfantaelena.utils.Utilidades;
 
 import java.io.IOException;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Libros {
@@ -24,6 +25,7 @@ public class Libros {
             this.stmt = null;
             this.rs = null;
             this.pstmt = null;
+            crearTablaLibros();
         } catch (IOException e) {
             // Error al leer propiedades
             // En una aplicación real, escribo en el log y delego
@@ -68,7 +70,7 @@ public class Libros {
     }
 
     public List<Libro> verCatalogo() throws AccesoDatosException {
-        List<Libro> libros=null;
+        List<Libro> libros = new ArrayList<>();
         Libro libro = new Libro();
         try {
             stmt = con.createStatement();
@@ -87,7 +89,6 @@ public class Libros {
             e.printStackTrace();
         } finally {
             liberar();
-            cerrar();
         }
         return libros;
 
@@ -103,18 +104,17 @@ public class Libros {
             e.printStackTrace();
         }finally {
             liberar();
-            cerrar();
         }
     }
 
     public void anadirLibro(Libro libro) throws AccesoDatosException {
         try {
             stmt = con.createStatement();
-            String sql = "insert into libros VALUES("
-                    + libro.getISBN() + ","
-                    + libro.getTitulo() + ","
-                    + libro.getAutor() + ","
-                    + libro.getEditorial() + ","
+            String sql = "INSERT INTO libros VALUES("
+                    + libro.getISBN() + ", '"
+                    + libro.getTitulo() + "','"
+                    + libro.getAutor() + "','"
+                    + libro.getEditorial() + "',"
                     + libro.getPaginas() + ","
                     + libro.getCopias() + ")";
             stmt.executeUpdate(sql);
@@ -122,14 +122,13 @@ public class Libros {
             e.printStackTrace();
         }finally {
             liberar();
-            cerrar();
         }
-
     }
     private void crearTablaLibros() {
         try {
             stmt = con.createStatement();
-            String sql = "create table libros" +
+            stmt.executeUpdate("drop table if exists libros;");
+            String sql = "CREATE TABLE libros" +
                     "(isbn integer not null," +
                     "   titulo varchar(50) not null," +
                     "   autor varchar(50) not null," +
@@ -141,8 +140,6 @@ public class Libros {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        System.out.println("Created table in given database...");
     }
     public void borrar(Libro libro) throws AccesoDatosException {
         try {
@@ -154,7 +151,6 @@ public class Libros {
             e.printStackTrace();
         }finally {
             liberar();
-            cerrar();
         }
     }
 
@@ -176,11 +172,11 @@ public class Libros {
                 libro.setPaginas(rs.getInt("paginas"));
                 libro.setCopias(rs.getInt("copias"));
             }
+            System.out.println(libro.toString());
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
             liberar();
-            cerrar();
         }
     }
 

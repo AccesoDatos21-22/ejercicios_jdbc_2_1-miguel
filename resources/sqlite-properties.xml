@@ -3,7 +3,7 @@
 <properties>
 
     <entry key="dbms">sqlite</entry>
-    <entry key="driver">org.xerial:sqlite:jdbc</entry>
+    <entry key="driver">org.xerial:sqlite-jdbc</entry>
     <entry key="database_name">mem:test</entry>
     <entry key="user_name">sa</entry>
     <entry key="password"></entry>
