@@ -14,8 +14,8 @@ public class Libros {
 
     private final Connection con;
     private Statement stmt;
-    private final ResultSet rs;
-    private final PreparedStatement pstmt;
+    private ResultSet rs;
+    private PreparedStatement pstmt;
 
     public Libros() throws AccesoDatosException {
         try {
@@ -68,13 +68,43 @@ public class Libros {
     }
 
     public List<Libro> verCatalogo() throws AccesoDatosException {
-
-        return null;
+        List<Libro> libros=null;
+        Libro libro = new Libro();
+        try {
+            stmt = con.createStatement();
+            rs = stmt.executeQuery("SELECT * FROM libros");
+            while(rs.next()){
+                libro.setISBN(rs.getInt("isbn"));
+                libro.setTitulo(rs.getString("titulo"));
+                libro.setAutor(rs.getString("autor"));
+                libro.setEditorial(rs.getString("editorial"));
+                libro.setPaginas(rs.getInt("paginas"));
+                libro.setCopias(rs.getInt("copias"));
+                libros.add(libro);
+                libro=new Libro();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            liberar();
+            cerrar();
+        }
+        return libros;
 
     }
 
     public void actualizarCopias(Libro libro) throws AccesoDatosException {
-
+        try {
+            stmt = con.createStatement();
+            String sql = "UPDATE libros SET copias = "+libro.getCopias()+" WHERE isbn = "+libro.getISBN();
+            stmt.executeUpdate(sql);
+            System.out.println("Libro actualizado");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally {
+            liberar();
+            cerrar();
+        }
     }
 
     public void anadirLibro(Libro libro) throws AccesoDatosException {
@@ -90,23 +120,51 @@ public class Libros {
             stmt.executeUpdate(sql);
         } catch (SQLException e) {
             e.printStackTrace();
+        }finally {
+            liberar();
+            cerrar();
         }
 
     }
 
     public void borrar(Libro libro) throws AccesoDatosException {
-
-
+        try {
+            stmt = con.createStatement();
+            String sql = "DELETE FROM libros WHERE isbn = "+libro.getISBN();
+            stmt.executeUpdate(sql);
+            System.out.println("Libro eliminado");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally {
+            liberar();
+            cerrar();
+        }
     }
 
     public String[] getCamposLibro() throws AccesoDatosException {
-
-        return null;
+        return new String[]{"isbn","titulo","autor","editorial","paginas","copias"};
     }
 
 
     public void obtenerLibro(int ISBN) throws AccesoDatosException {
-
+        Libro libro = new Libro();
+        try {
+            stmt = con.createStatement();
+            rs = stmt.executeQuery("SELECT * FROM libros WHERE isbn = "+ISBN);
+            while(rs.next()){
+                libro.setISBN(rs.getInt("isbn"));
+                libro.setTitulo(rs.getString("titulo"));
+                libro.setAutor(rs.getString("autor"));
+                libro.setEditorial(rs.getString("editorial"));
+                libro.setPaginas(rs.getInt("paginas"));
+                libro.setCopias(rs.getInt("copias"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            liberar();
+            cerrar();
+        }
     }
 
 
