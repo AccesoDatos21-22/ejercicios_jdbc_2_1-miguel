@@ -181,6 +181,7 @@ public class Libros {
     }
 
     private static final String SELECT_CAMPOS_QUERY = "SELECT * FROM LIBROS LIMIT 1";
+
     public String[] getCamposLibro() throws AccesoDatosException {
 
         /*Sentencia sql con parámetros de entrada*/
