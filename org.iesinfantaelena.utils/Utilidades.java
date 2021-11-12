@@ -8,11 +8,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
-/**
- * @description Clase que establece una conexión a BD utilizando la clase
- * DriverManager. lee los datos de u archivo de propiedades
- */
-
 public class Utilidades {
 
     public String dbms;
@@ -26,7 +21,7 @@ public class Utilidades {
     private int portNumber;
     private Properties prop;
 
-    private static final String PROPERTIES_FILE = System.getProperty("user.dir") + "/resources/h2-properties.xml";
+    private static final String PROPERTIES_FILE = System.getProperty("user.dir") + "/resources/sqlite-properties.xml";
 
     public Utilidades() throws IOException {
         super();
@@ -96,8 +91,13 @@ public class Utilidades {
 
                 break;
             case "sqlite":
-                conn = DriverManager
-                        .getConnection("jdbc:" + this.dbms + ":" + System.getProperty("user.dir") + this.dbName);
+                try {
+                    Class.forName("org.sqlite.JDBC");
+                    conn = DriverManager
+                            .getConnection("jdbc:" + this.dbms + ":" + System.getProperty("user.dir") + this.dbName);
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
                 break;
             case "h2":
                 conn = DriverManager
