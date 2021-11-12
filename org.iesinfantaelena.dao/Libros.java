@@ -13,7 +13,7 @@ public class Libros {
     // Consultas a realizar en BD
 
     private final Connection con;
-    private final Statement stmt;
+    private Statement stmt;
     private final ResultSet rs;
     private final PreparedStatement pstmt;
 
@@ -97,6 +97,24 @@ public class Libros {
 
     }
 
+    private void crearTablaLibros() {
+        try {
+            stmt = con.createStatement();
+            String sql = "create table libros" +
+                    "(isbn integer not null," +
+                    "   titulo varchar(50) not null," +
+                    "   autor varchar(50) not null," +
+                    "   editorial varchar(25) not null," +
+                    "   paginas integer not null," +
+                    "   copias integer not null," +
+                    "   constraint isbn_pk primary key (isbn))";
+            stmt.executeUpdate(sql);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Created table in given database...");
+    }
 
 }
 
