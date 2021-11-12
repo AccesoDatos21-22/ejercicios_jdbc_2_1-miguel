@@ -76,7 +76,6 @@ public class Cafes {
         } catch (SQLException sqle) {
             // En una aplicación real, escribo en el log y delego
             //Utilidades.printSQLException(sqle);
-            sqle.printStackTrace();
 
 
         } finally {
@@ -175,6 +174,7 @@ public class Cafes {
             // Ejecución del borrado
             pstmt.executeUpdate();
             System.out.println("café " + nombre + " ha sido borrado.");
+
         } catch (SQLException sqle) {
             // En una aplicación real, escribo en el log y delego
             Utilidades.printSQLException(sqle);
@@ -219,5 +219,6 @@ public class Cafes {
             liberar();
             cerrar();
         }
+
     }
 }
