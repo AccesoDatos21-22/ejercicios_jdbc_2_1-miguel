@@ -158,9 +158,9 @@ public class Libros {
         }
     }
 
-    public String[] getCamposLibro() throws AccesoDatosException {
+    /*public String[] getCamposLibro() throws AccesoDatosException {
         return new String[]{"isbn","titulo","autor","editorial","paginas","copias"};
-    }
+    }*/
 
 
     public void obtenerLibro(int ISBN) throws AccesoDatosException {
@@ -184,6 +184,39 @@ public class Libros {
         }
     }
 
+    private static final String SELECT_CAMPOS_QUERY = "SELECT * FROM LIBROS LIMIT 1";
+    public String[] getCamposLibro() throws AccesoDatosException {
 
+        /*Sentencia sql con parámetros de entrada*/
+        pstmt = null;
+        /*Conjunto de Resultados a obtener de la sentencia sql*/
+        rs= null;
+        ResultSetMetaData rsmd = null;
+        String[] campos = null;
+        try {
+            //Solicitamos a la conexion un objeto stmt para nuestra consulta
+            pstmt = con.prepareStatement(SELECT_CAMPOS_QUERY);
+
+            //Le solicitamos al objeto stmt que ejecute nuestra consulta
+            //y nos devuelve los resultados en un objeto ResultSet
+            rs = pstmt.executeQuery();
+            rsmd = rs.getMetaData();
+            int columns = rsmd.getColumnCount();
+            campos = new String[columns];
+            for (int i = 0; i < columns; i++) {
+                //Los indices de las columnas comienzan en 1
+                campos[i] = rsmd.getColumnLabel(i + 1);
+            }
+            return campos;
+        } catch (SQLException sqle) {
+            // En una aplicación real, escribo en el log y delego
+            Utilidades.printSQLException(sqle);
+            throw new AccesoDatosException(
+                    "Ocurrió un error al acceder a los datos");
+
+        } finally{
+            liberar();
+        }
+    }
 }
 
