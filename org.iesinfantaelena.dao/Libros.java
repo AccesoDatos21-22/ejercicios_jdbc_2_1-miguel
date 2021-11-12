@@ -13,7 +13,7 @@ public class Libros {
     // Consultas a realizar en BD
 
     private final Connection con;
-    private final Statement stmt;
+    private Statement stmt;
     private final ResultSet rs;
     private final PreparedStatement pstmt;
 
@@ -78,7 +78,19 @@ public class Libros {
     }
 
     public void anadirLibro(Libro libro) throws AccesoDatosException {
-
+        try {
+            stmt = con.createStatement();
+            String sql = "insert into libros VALUES("
+                    + libro.getISBN() + ","
+                    + libro.getTitulo() + ","
+                    + libro.getAutor() + ","
+                    + libro.getEditorial() + ","
+                    + libro.getPaginas() + ","
+                    + libro.getCopias() + ")";
+            stmt.executeUpdate(sql);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
     }
 
