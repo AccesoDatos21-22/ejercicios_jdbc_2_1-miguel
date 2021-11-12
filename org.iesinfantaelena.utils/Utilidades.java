@@ -91,8 +91,13 @@ public class Utilidades {
 
                 break;
             case "sqlite":
-                conn = DriverManager
-                        .getConnection("jdbc:" + this.dbms + ":" + System.getProperty("user.dir") + this.dbName);
+                try {
+                    Class.forName("org.sqlite.JDBC");
+                    conn = DriverManager
+                            .getConnection("jdbc:" + this.dbms + ":" + System.getProperty("user.dir") + this.dbName);
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
                 break;
             case "h2":
                 conn = DriverManager
