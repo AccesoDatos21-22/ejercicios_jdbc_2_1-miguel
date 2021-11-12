@@ -27,7 +27,6 @@ public class Main {
             libros.anadirLibro(libro2);
             libros.anadirLibro(libro3);
 
-
         } catch (AccesoDatosException e) {
             e.printStackTrace();
         }
